@@ -259,4 +259,84 @@ public class AnimalAssembler : MonoBehaviour
                             sr.sortingOrder = 10;
                         }
                         
-                       
+                        currentVisuals.Add(leftShoe);
+                        Debug.Log($"✅ Left shoe attached to {rightFootPoint.name}");
+                    }
+                    
+                    // RIGHT SHOE (player's right foot = screen left)
+                    // Note: We attach to leftFootPoint because of screen orientation
+                    if (leftFootPoint != null)
+                    {
+                        GameObject rightShoe = Instantiate(cheetahShoePrefab);
+                        rightShoe.transform.SetParent(leftFootPoint);
+                        rightShoe.transform.localPosition = Vector3.zero;
+                        rightShoe.transform.localRotation = Quaternion.identity;
+                        
+                        SpriteRenderer sr = rightShoe.GetComponent<SpriteRenderer>();
+                        if (sr != null)
+                        {
+                            sr.sortingOrder = 10;
+                        }
+                        
+                        currentVisuals.Add(rightShoe);
+                        Debug.Log($"✅ Right shoe attached to {leftFootPoint.name}");
+                    }
+                }
+                break;
+                
+            case AnimalType.Turtle:
+                if (turtleShellPrefab != null && backPoint != null)
+                {
+                    GameObject visual = Instantiate(turtleShellPrefab);
+                    visual.transform.SetParent(backPoint);
+                    visual.transform.localPosition = Vector3.zero;
+                    visual.transform.localRotation = Quaternion.Euler(0, 0, 90f);  // Rotate to sit correctly on back
+                    currentVisuals.Add(visual);
+                    Debug.Log($"Turtle shell attached to {backPoint.name} (Permanent)");
+                }
+                break;
+        }
+    }
+    
+    /// <summary>
+    /// Returns the correct attachment point for the currently equipped animal.
+    /// </summary>
+    Transform GetCorrectParentForCurrentAnimal()
+    {
+        switch (currentAnimal)
+        {
+            case AnimalType.Bat: return backPoint;
+            case AnimalType.Cheetah: return leftFootPoint;  // Used as reference for Cheetah
+            case AnimalType.Turtle: return backPoint;
+            default: return null;
+        }
+    }
+    
+    /// <summary>
+    /// Returns the correct rotation for the currently equipped animal's visuals.
+    /// </summary>
+    Quaternion GetCorrectRotationForCurrentAnimal()
+    {
+        switch (currentAnimal)
+        {
+            case AnimalType.Bat: return Quaternion.identity;
+            case AnimalType.Cheetah: return Quaternion.identity;
+            case AnimalType.Turtle: return Quaternion.Euler(0, 0, 90f);
+            default: return Quaternion.identity;
+        }
+    }
+    
+    // Public methods for other scripts to check current animal
+    public bool HasAnimal(AnimalType type) => currentAnimal == type;
+    public AnimalType GetCurrentAnimal() => currentAnimal;
+    public bool HasAnyAnimal() => currentAnimal != AnimalType.None;
+    
+    /// <summary>
+    /// Manually removes the current animal part.
+    /// </summary>
+    public void RemoveAnimal()
+    {
+        RemoveCurrentAnimal();
+        Debug.Log("Animal part manually removed!");
+    }
+}
